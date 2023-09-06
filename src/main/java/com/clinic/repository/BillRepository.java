@@ -4,15 +4,10 @@
  */
 package com.clinic.repository;
 
-import com.clinic.pojo.Unit;
-import java.util.List;
-import java.util.Map;
-
 /**
  *
  * @author hp
  */
-public interface UnitRepository {
-    Unit getUnitById(int id);
-    List<Unit> getUnits(Map<String, String> params);
+public class BillRepository {
+    
 }

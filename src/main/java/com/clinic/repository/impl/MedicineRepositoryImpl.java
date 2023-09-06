@@ -43,15 +43,22 @@ public class MedicineRepositoryImpl implements MedicineRepository {
         q.select(root);
         
         if (params != null) {
-            String cateId = params.getOrDefault("cateId", "");
             List<Predicate> predicates = new ArrayList();
             
+            String cateId = params.getOrDefault("cateId", "");
             if (cateId != null && !cateId.isEmpty()) {
                 predicates.add(b.equal(root.get("categoryId").get("id"), Integer.valueOf(cateId)));
-                
                q.where(predicates.toArray(new Predicate[]{}));
                 
             }
+            
+            String name = params.getOrDefault("name", "");
+            if (name != null && !name.isEmpty()) {
+                          predicates.add(b.like(root.get("name"), String.format("%%%s%%", name)));
+               q.where(predicates.toArray(new Predicate[]{}));
+                
+            }
+            
             
         }
         

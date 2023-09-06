@@ -44,7 +44,9 @@ public class MedicineUnit implements Serializable {
     private Unit unitId;
     @Column(name = "unit_price")
     private Integer unitPrice;
-
+    @Column(name = "quantity")
+    private Integer quantity;
+    
     public MedicineUnit() {
     }
 
@@ -113,6 +115,20 @@ public class MedicineUnit implements Serializable {
      */
     public void setUnitPrice(Integer unitPrice) {
         this.unitPrice = unitPrice;
+    }
+
+    /**
+     * @return the quantity
+     */
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    /**
+     * @param quantity the quantity to set
+     */
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
     
 }

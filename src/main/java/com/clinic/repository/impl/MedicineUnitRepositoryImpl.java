@@ -4,7 +4,10 @@
  */
 package com.clinic.repository.impl;
 
+import com.clinic.pojo.Medicine;
 import com.clinic.pojo.MedicineUnit;
+import com.clinic.pojo.Unit;
+import com.clinic.repository.MedicineRepository;
 import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -16,7 +19,8 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import com.clinic.repository.MedicineUnitRepository;
-
+import com.clinic.repository.UnitRepository;
+import javax.persistence.criteria.CriteriaUpdate;
 
 /**
  *
@@ -24,11 +28,15 @@ import com.clinic.repository.MedicineUnitRepository;
  */
 @Repository
 @Transactional
-public class MedicineUnitRepositoryImpl implements MedicineUnitRepository{
+public class MedicineUnitRepositoryImpl implements MedicineUnitRepository {
 
     @Autowired
     private LocalSessionFactoryBean factory;
-    
+    @Autowired
+    private MedicineRepository medicineRepository;
+    @Autowired
+    private UnitRepository unitRepository;
+
     @Override
     public List<MedicineUnit> getAllMedicineUnit() {
         Session session = this.factory.getObject().getCurrentSession();
@@ -51,5 +59,51 @@ public class MedicineUnitRepositoryImpl implements MedicineUnitRepository{
         Query query = session.createQuery(q);
         return (MedicineUnit) query.getSingleResult();
     }
-    
+
+    @Override
+    public MedicineUnit getOrCreateByMedicineUnit(int medicineId, int unitId) {
+        Session session = factory.getObject().getCurrentSession();
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<MedicineUnit> query = builder.createQuery(MedicineUnit.class);
+        Root<MedicineUnit> root = query.from(MedicineUnit.class);
+        query.select(root)
+                .where(builder.equal(root.get("medicineId").get("id"), medicineId),
+                        builder.equal(root.get("unitId").get("id"), unitId));
+        Query<MedicineUnit> q = session.createQuery(query);
+
+        List<MedicineUnit> medicineUnits = q.getResultList();
+        if (!medicineUnits.isEmpty()) {
+            return medicineUnits.get(0);
+        } else {
+            Medicine medicine = medicineRepository.getMedicineById(medicineId);
+            Unit unit = unitRepository.getUnitById(unitId);
+
+            MedicineUnit newMedicineUnit = new MedicineUnit();
+            newMedicineUnit.setMedicineId(medicine);
+            newMedicineUnit.setUnitId(unit);
+            newMedicineUnit.setUnitPrice(0);
+            newMedicineUnit.setQuantity(0);
+
+            session.save(newMedicineUnit);
+            return newMedicineUnit;
+        }
+    }
+
+    @Override
+    public boolean update(MedicineUnit medicineUnit) {
+        try {
+            Session session = factory.getObject().getCurrentSession();
+            CriteriaBuilder builder = session.getCriteriaBuilder();
+            CriteriaUpdate<MedicineUnit> updateCriteria = builder.createCriteriaUpdate(MedicineUnit.class);
+            Root<MedicineUnit> root = updateCriteria.from(MedicineUnit.class);
+            updateCriteria.set(root.get("quantity"), medicineUnit.getQuantity());
+            updateCriteria.where(builder.equal(root.get("id"), medicineUnit.getId()));
+            int updatedCount = session.createQuery(updateCriteria).executeUpdate();
+            return updatedCount > 0;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
 }

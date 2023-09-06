@@ -19,6 +19,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.Proxy;
@@ -37,7 +38,7 @@ import org.hibernate.annotations.Proxy;
     @NamedQuery(name = "ReportDetail.findByUsageInfo", query = "SELECT r FROM ReportDetail r WHERE r.usageInfo = :usageInfo")})
 public class ReportDetail implements Serializable {
 
-    @Size(max = 100)
+   @Min(value = 0, message = "Quantity must be at least 0")
     @Column(name = "quantity")
     private Integer quantity;
     private static final long serialVersionUID = 1L;

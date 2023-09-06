@@ -14,4 +14,6 @@ import java.util.List;
 public interface MedicineUnitRepository {
     List<MedicineUnit> getAllMedicineUnit();
     MedicineUnit getById(int id);
+    MedicineUnit getOrCreateByMedicineUnit(int medicineId, int unitId);
+    boolean update(MedicineUnit medicineUnit);
 }

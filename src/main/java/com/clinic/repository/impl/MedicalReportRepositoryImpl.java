@@ -4,21 +4,14 @@
  */
 package com.clinic.repository.impl;
 
-import com.clinic.pojo.Doctor;
 import com.clinic.pojo.MedicalReport;
-import com.clinic.pojo.Medicine;
 import com.clinic.pojo.MedicineUnit;
-import com.clinic.pojo.Patient;
 import com.clinic.pojo.ReportDetail;
-import com.clinic.pojo.User;
 import com.clinic.repository.DoctorRepository;
 import com.clinic.repository.MedicalReportRepository;
-import com.clinic.repository.MedicineRepository;
 import com.clinic.repository.MedicineUnitRepository;
 import com.clinic.repository.PatientRepository;
-import com.clinic.repository.UnitRepository;
 import com.clinic.repository.UserRepository;
-import freemarker.template.SimpleDate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -62,11 +55,6 @@ public class MedicalReportRepositoryImpl implements MedicalReportRepository {
 
     @Autowired
     private MedicineUnitRepository medicineUnitRepository;
-
-    @Autowired
-    private MedicineRepository medicineRepository;
-    @Autowired
-    private UnitRepository unitRepository;
 
     @Autowired
     private SimpleDateFormat f;
@@ -140,55 +128,59 @@ public class MedicalReportRepositoryImpl implements MedicalReportRepository {
         try {
             if (object != null) {
 
-                Map<String, Object> reportDetailMap = (Map<String, Object>) object.get("report_detail");
-                Map<String, Object> medicalReportMap = (Map<String, Object>) reportDetailMap.get("medical_report");
-                Map<String, Object> medicineUnitMap = (Map<String, Object>) reportDetailMap.getOrDefault("medicine_unit", null);
-
+                Map<String, Object> medicalReportMap = (Map<String, Object>) object.get("medicalReport");
+                List<Map<String, Object>> reportDetailList = (List<Map<String, Object>>) object.get("reportDetail");
                 String symptom = medicalReportMap.get("symptom").toString();
                 String diagnose = medicalReportMap.get("diagnose").toString();
-                String createdDate = medicalReportMap.get("created_date").toString();
+                String createdDate = medicalReportMap.get("createdDate").toString();
 
-                Map<String, Object> patientMap = (Map<String, Object>) medicalReportMap.get("patient");
+                Map<String, Object> patientMap = (Map<String, Object>) medicalReportMap.get("patientId");
                 int patientId = (int) patientMap.get("id");
 
-                Map<String, Object> doctorMap = (Map<String, Object>) medicalReportMap.get("doctor");
-                int doctorId = (int) doctorMap.get("id");
+                Map<String, Object> doctorMap = (Map<String, Object>) medicalReportMap.get("doctorId");
+                int doctorId = (int) doctorMap.getOrDefault("id", 1);
 
                 MedicalReport medicalReport = new MedicalReport();
                 medicalReport.setsymptom(symptom);
                 medicalReport.setDiagnose(diagnose);
-                medicalReport.setCreatedDate(f.parse(createdDate));
+                medicalReport.setCreatedDate(new SimpleDateFormat("yyyy-MM-dd").parse(createdDate));
                 medicalReport.setPatientId(patientRepository.getById(patientId));
                 medicalReport.setDoctorId(doctorRepository.getDoctorById(doctorId));
 
                 session.save(medicalReport);
 
-                if (medicineUnitMap != null) {
-                    // this report has medicine
-                    Map<String, Object> medicineMap = (Map<String, Object>) medicineUnitMap.get("medicine");
-                    Map<String, Object> unitMap = (Map<String, Object>) medicineUnitMap.get("unit");
-                    int medicineId = (int) medicineMap.get("id");
-                    int unitId = (int) unitMap.get("id");
-                    int unitPrice = (int) medicineUnitMap.get("unit_price");
+                if (reportDetailList != null && !reportDetailList.isEmpty()) {
+                    // Iterate through the reportDetailList
+                    for (Map<String, Object> reportDetailMap : reportDetailList) {
+                        Map<String, Object> medicineUnitMap = (Map<String, Object>) reportDetailMap.get("medicineUnitId");
 
-                    MedicineUnit medicineUnit = new MedicineUnit();
-                    medicineUnit.setMedicineId(medicineRepository.getMedicineById(medicineId));
-                    medicineUnit.setUnitId(unitRepository.getUnitById(unitId));
-                    medicineUnit.setUnitPrice(unitPrice);
-                    session.save(medicineUnit);
+                        if (medicineUnitMap != null) {
+                            Map<String, Object> medicineMap = (Map<String, Object>) medicineUnitMap.get("medicineId");
+                            Map<String, Object> unitMap = (Map<String, Object>) medicineUnitMap.get("unitId");
 
-                    int quantity = (int) reportDetailMap.get("quantity");
-                    String usageInfo = reportDetailMap.get("usageInfo").toString();
+                            if (medicineMap != null && unitMap != null) {
+                                int medicineId = (int) medicineMap.get("id");
+                                int unitId = (int) unitMap.get("id");
+                                
+   
+                                String quantity = reportDetailMap.get("quantity").toString();
+                                String usageInfo = reportDetailMap.get("usageInfo").toString();
+                                
+                                MedicineUnit medicineUnit = medicineUnitRepository.getOrCreateByMedicineUnit(medicineId, unitId);
+                                medicineUnit.setQuantity(medicineUnit.getQuantity() - Integer.valueOf(quantity));
+                                medicineUnitRepository.update(medicineUnit);
+                                
+                                ReportDetail reportDetail = new ReportDetail();
+                                reportDetail.setQuantity(Integer.valueOf(quantity));
+                                reportDetail.setUsageInfo(usageInfo);
+                                reportDetail.setMedicalreportId(medicalReport);
+                                reportDetail.setMedicineUnitId(medicineUnit);
 
-                    ReportDetail reportDetail = new ReportDetail();
-                    reportDetail.setQuantity(quantity);
-                    reportDetail.setUsageInfo(usageInfo);
-                    reportDetail.setMedicalreportId(medicalReport);
-                    reportDetail.setMedicineUnitId(medicineUnit);
-
-                    session.save(reportDetail);
+                                session.save(reportDetail);
+                            }
+                        }
+                    }
                 }
-
                 result = true;
             }
         } catch (Exception ex) {

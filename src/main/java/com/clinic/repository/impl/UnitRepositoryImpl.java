@@ -7,6 +7,9 @@ package com.clinic.repository.impl;
 import com.clinic.pojo.Unit;
 import com.clinic.pojo.User;
 import com.clinic.repository.UnitRepository;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -48,6 +51,27 @@ public class UnitRepositoryImpl implements UnitRepository {
             // Handle the case when no user is found with the given name
             return null; // or throw a custom exception, return a custom response, etc.
         }
+    }
+
+    @Override
+    public List<Unit> getUnits(Map<String, String> params) {
+        Session s = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder b = s.getCriteriaBuilder();
+        CriteriaQuery<Unit> q = b.createQuery(Unit.class);
+        Root<Unit> root = q.from(Unit.class);
+        q.select(root);
+        
+        if (params != null)
+        {
+            List<Predicate> predicates = new ArrayList();
+            String id = params.get("id");
+            if (id != null && !id.isEmpty()) {
+                predicates.add(b.equal(root.get("id"), id));
+            }
+            q.where(predicates.toArray(Predicate[]:: new));
+        }
+        
+        return s.createQuery(q).getResultList();
     }
 
 }
