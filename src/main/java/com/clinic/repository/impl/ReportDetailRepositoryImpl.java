@@ -4,20 +4,12 @@
  */
 package com.clinic.repository.impl;
 
-import com.clinic.pojo.MedicalReport;
 import com.clinic.pojo.ReportDetail;
 import com.clinic.repository.ReportDetailRepository;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -53,3 +45,4 @@ public class ReportDetailRepositoryImpl implements ReportDetailRepository {
     }
 
 }
+

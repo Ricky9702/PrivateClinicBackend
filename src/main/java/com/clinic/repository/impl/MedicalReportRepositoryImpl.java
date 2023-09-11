@@ -11,7 +11,7 @@ import com.clinic.repository.DoctorRepository;
 import com.clinic.repository.MedicalReportRepository;
 import com.clinic.repository.MedicineUnitRepository;
 import com.clinic.repository.PatientRepository;
-import com.clinic.repository.UserRepository;
+import freemarker.template.SimpleDate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -45,43 +45,40 @@ public class MedicalReportRepositoryImpl implements MedicalReportRepository {
     private LocalSessionFactoryBean factory;
 
     @Autowired
-    private UserRepository userRepository;
-
+    private SimpleDateFormat f;
+    
     @Autowired
     private PatientRepository patientRepository;
 
     @Autowired
     private DoctorRepository doctorRepository;
-
+    
     @Autowired
     private MedicineUnitRepository medicineUnitRepository;
 
-    @Autowired
-    private SimpleDateFormat f;
-
     @Override
-    public List<MedicalReport> getMedicalReports(Map<String, Object> params) {
+    public List<MedicalReport> getMedicalReports(Map<String, String> params) {
         Session session = this.factory.getObject().getCurrentSession();
         CriteriaBuilder b = session.getCriteriaBuilder();
         CriteriaQuery<MedicalReport> q = b.createQuery(MedicalReport.class);
         Root<MedicalReport> root = q.from(MedicalReport.class);
-        List<Predicate> predicates = new ArrayList<>();
+        q.select(root);
 
         if (params != null) {
+            List<Predicate> predicates = new ArrayList<>();
 
-            String patientId = params.getOrDefault(("patientId"), "").toString();
-            if (patientId != null && !patientId.isEmpty()) {
-                int id = Integer.parseInt(patientId);
-                predicates.add(b.equal(root.get("patientId").get("id"), id));
+            String idString = params.get("id");
+            if (idString != null) {
+                String[] ids = idString.split(",");
+                List<Integer> idList = new ArrayList<>();
+                for (String itemId : ids) {
+                    idList.add(Integer.parseInt(itemId));
+                }
+                Predicate patientIdPredicate = root.get("id").in(idList);
+                predicates.add(patientIdPredicate);
             }
 
-            String idParams = params.getOrDefault(("id"), "").toString();
-            if (idParams != null && !idParams.isEmpty()) {
-                int id = Integer.parseInt(idParams);
-                predicates.add(b.equal(root.get("id"), id));
-            }
-
-            String fromDate = params.getOrDefault(("fromDate"), "").toString();
+             String fromDate = params.getOrDefault(("fromDate"), "").toString();
             if (fromDate != null && !fromDate.isEmpty()) {
                 try {
                     Date fromDateParams = new SimpleDateFormat("yyyy-MM-dd").parse(fromDate);
@@ -114,14 +111,89 @@ public class MedicalReportRepositoryImpl implements MedicalReportRepository {
                     Logger.getLogger(MedicalReportRepositoryImpl.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+
+            String patientId = params.get("patientId");
+            if (patientId != null) {
+                String[] patientIds = patientId.split(",");
+                List<Integer> parsedPatientIds = new ArrayList<>();
+                for (String id : patientIds) {
+                    parsedPatientIds.add(Integer.parseInt(id));
+                }
+                Predicate patientIdPredicate = root.get("patientId").in(parsedPatientIds);
+                predicates.add(patientIdPredicate);
+            }
+
+            String isPaid = params.get("isPaid");
+            if (isPaid != null) {
+                Predicate isPaidPredicate = b.equal(
+                        root.get("isPaid"),
+                        Integer.parseInt(isPaid));
+                predicates.add(isPaidPredicate);
+            }
+
+            q.where(predicates.toArray(new Predicate[0]));
+
         }
-        q.select(root).where(predicates.toArray(Predicate[]::new));
-        q.orderBy(b.desc(root.get("id")));
-        Query query = session.createQuery(q);
+        Query<MedicalReport> query = session.createQuery(q);
         return query.getResultList();
     }
 
     @Override
+    public MedicalReport getMedicalReportById(int id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder b = session.getCriteriaBuilder();
+        CriteriaQuery<MedicalReport> q = b.createQuery(MedicalReport.class);
+        Root<MedicalReport> root = q.from(MedicalReport.class);
+        q.select(root);
+        try {
+            Predicate predicate1 = b.equal(root.get("id"), id);
+            q.where(predicate1);
+        } catch (Exception ex) {
+            Logger.getLogger(MedicalReportRepositoryImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        Query<MedicalReport> query = session.createQuery(q);
+        return query.getSingleResult();
+    }
+
+    @Override
+    public Boolean updatePaid(Map<String, String> params) {
+        Session session = this.factory.getObject().getCurrentSession();
+
+        try {
+            List<Integer> idList = new ArrayList<>();
+            String idString = params.get("id");
+
+            if (idString != null) {
+                String[] idStrings = idString.split(",");
+
+                for (String id : idStrings) {
+                    idList.add(Integer.parseInt(id));
+                }
+
+                for (int id : idList) {
+                    MedicalReport updatedMedicalReport = this.getMedicalReportById(id);
+
+                    if (updatedMedicalReport != null) {
+                        Short isPaid = 1;
+                        updatedMedicalReport.setIsPaid(isPaid);
+                        session.update(updatedMedicalReport);
+                    } else {
+                        System.err.println("Can not found medical report");
+                    }
+                }
+
+                return true;
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+    
+     @Override
     public boolean create(Map<String, Object> object) {
         Session session = factory.getObject().getCurrentSession();
         boolean result = false;
@@ -141,11 +213,11 @@ public class MedicalReportRepositoryImpl implements MedicalReportRepository {
                 int doctorId = (int) doctorMap.getOrDefault("id", 1);
 
                 MedicalReport medicalReport = new MedicalReport();
-                medicalReport.setsymptom(symptom);
+                medicalReport.setSyntomp(symptom);
                 medicalReport.setDiagnose(diagnose);
                 medicalReport.setCreatedDate(new SimpleDateFormat("yyyy-MM-dd").parse(createdDate));
                 medicalReport.setPatientId(patientRepository.getById(patientId));
-                medicalReport.setDoctorId(doctorRepository.getDoctorById(doctorId));
+                medicalReport.setDoctorId(doctorRepository.getDoctorByUserId(doctorId));
 
                 session.save(medicalReport);
 
@@ -171,7 +243,7 @@ public class MedicalReportRepositoryImpl implements MedicalReportRepository {
                                 medicineUnitRepository.update(medicineUnit);
                                 
                                 ReportDetail reportDetail = new ReportDetail();
-                                reportDetail.setQuantity(Integer.valueOf(quantity));
+                                reportDetail.setQuantity(Integer.parseInt(quantity));
                                 reportDetail.setUsageInfo(usageInfo);
                                 reportDetail.setMedicalreportId(medicalReport);
                                 reportDetail.setMedicineUnitId(medicineUnit);
@@ -189,4 +261,5 @@ public class MedicalReportRepositoryImpl implements MedicalReportRepository {
         }
         return result;
     }
+
 }

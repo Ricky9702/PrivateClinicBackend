@@ -19,6 +19,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -42,12 +44,21 @@ public class Medicine implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Size(max = 100)
+    
+    @NotBlank(message = "{medicine.name.notNull}")
+    @Size(max = 100, message = "{medicine.name.lenErr}")
     @Column(name = "name")
     private String name;
+    
+    @OneToMany(mappedBy = "medicineId")
+    @JsonIgnore
+    private Collection<MedicineUnit> medicineUnitCollection;
+    
+    @Valid
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     @ManyToOne
     private Category categoryId;
+
     public Medicine() {
     }
 
@@ -69,6 +80,16 @@ public class Medicine implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+   
+    @XmlTransient
+    public Collection<MedicineUnit> getMedicineUnitCollection() {
+        return medicineUnitCollection;
+    }
+
+    public void setMedicineUnitCollection(Collection<MedicineUnit> medicineUnitCollection) {
+        this.medicineUnitCollection = medicineUnitCollection;
     }
 
     public Category getCategoryId() {

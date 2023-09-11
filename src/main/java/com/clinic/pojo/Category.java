@@ -4,7 +4,7 @@
  */
 package com.clinic.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
@@ -17,6 +17,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -32,7 +33,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Category.findAll", query = "SELECT c FROM Category c"),
     @NamedQuery(name = "Category.findById", query = "SELECT c FROM Category c WHERE c.id = :id"),
     @NamedQuery(name = "Category.findByName", query = "SELECT c FROM Category c WHERE c.name = :name")})
-@JsonIgnoreProperties({"medicineCollection"})
 public class Category implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -41,10 +41,14 @@ public class Category implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    @Size(max = 100)
+    
+    @NotBlank(message = "{category.name.notNull}")
+    @Size(max = 100, message = "{category.name.lenErr}")
     @Column(name = "name")
     private String name;
+    
     @OneToMany(mappedBy = "categoryId")
+    @JsonIgnore
     private Collection<Medicine> medicineCollection;
 
     public Category() {

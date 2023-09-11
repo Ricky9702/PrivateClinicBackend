@@ -5,11 +5,19 @@
 package com.clinic.repository.impl;
 
 import com.clinic.pojo.Doctor;
+import com.clinic.pojo.Nurse;
 import com.clinic.pojo.NurseShift;
 import com.clinic.repository.NurseShiftRepository;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.hibernate.HibernateException;
@@ -29,6 +37,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class NurseShiftRepositoryImpl implements NurseShiftRepository{
     @Autowired
     private LocalSessionFactoryBean factory;
+    @Autowired
+    private SimpleDateFormat f;
     
     @Override
     public List<NurseShift> getNursesShift() {
@@ -96,4 +106,47 @@ public class NurseShiftRepositoryImpl implements NurseShiftRepository{
         return query.getSingleResult();    
     }
     
+    @Override
+    public List<Object[]> getNurseAndShifts(Map<String, String> params) {
+        Session s = factory.getObject().getCurrentSession();
+        CriteriaBuilder builder = s.getCriteriaBuilder();
+        CriteriaQuery<Object[]> query = builder.createQuery(Object[].class);
+
+        Root<NurseShift> nurseShiftRoot = query.from(NurseShift.class);
+
+        Join<NurseShift, Nurse> nurseJoin = nurseShiftRoot.join("nurseId");
+        
+        if (params != null) {
+            List<Predicate> predicates = new ArrayList<>();
+
+            String fromDate = params.get("fromDate"); // yyyy-MM-dd;
+            if (fromDate != null && !fromDate.isEmpty()) {
+                try {
+                    // Adjust the attribute name accordingly based on the selected table
+                        predicates.add(builder.greaterThanOrEqualTo(nurseShiftRoot.get("date"), f.parse(fromDate)));
+                } catch (ParseException ex) {
+                    Logger.getLogger(DoctorShiftRepositoryImpl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+            String toDate = params.get("toDate"); // yyyy-MM-dd;
+            if (toDate != null && !toDate.isEmpty()) {
+                try {
+                        predicates.add(builder.lessThanOrEqualTo(nurseShiftRoot.get("date"), f.parse(toDate)));
+                } catch (ParseException ex) {
+                    Logger.getLogger(DoctorShiftRepositoryImpl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+           query.multiselect(
+                    nurseJoin.get("userId").get("id"),
+                    nurseJoin.get("userId").get("name"),
+                    nurseJoin.get("userId").get("userRole"),
+                    nurseShiftRoot.get("shiftId"),
+                    nurseShiftRoot.get("date"));
+            query.where(predicates.toArray(Predicate[]::new));
+            
+            query.orderBy(builder.desc(nurseJoin.get("id")));
+        }
+        return s.createQuery(query).getResultList();        }
 }

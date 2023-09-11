@@ -15,6 +15,7 @@ import java.util.Map;
 public interface MedicineRepository {
     List<Medicine> getAllMedicine(Map<String, String> params);
     Medicine getMedicineById(int id);
+    Medicine getMedicineByName(String name);
     Boolean createMedicine(Medicine medicine);
     Boolean updateMedicine(Medicine medicine);
     Boolean deleteMedicine(int id);

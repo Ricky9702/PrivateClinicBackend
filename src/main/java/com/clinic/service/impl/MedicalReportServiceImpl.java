@@ -22,13 +22,18 @@ public class MedicalReportServiceImpl implements MedicalReportService{
     private MedicalReportRepository medicalReportRepository;
 
     @Override
-    public List<MedicalReport> getMedicalReports(Map<String, Object> params) {
+    public List<MedicalReport> getMedicalReports(Map<String, String> params) {
         return this.medicalReportRepository.getMedicalReports(params);
     }
 
     @Override
+    public Boolean updatePaid(Map<String, String> params) {
+        return this.medicalReportRepository.updatePaid(params);
+    }
+    
+    @Override
     public boolean create(Map<String, Object> object) {
         return this.medicalReportRepository.create(object);
     }
- 
+
 }

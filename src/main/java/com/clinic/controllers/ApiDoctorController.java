@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class ApiDoctorController {
     @Autowired
-    @Qualifier("doctorServiceImpl") // Specify the specific implementation
+    @Qualifier("doctorServiceImpl")
     private DoctorService doctorService;
     
     @GetMapping("/doctors")
@@ -35,4 +35,13 @@ public class ApiDoctorController {
         return new ResponseEntity<>(this.doctorService.getDoctorByDepartmentId(params), 
                 HttpStatus.OK);
     }
+    
+    @GetMapping(value = "/doctors/{id}", produces = "application/json")
+    public ResponseEntity<Doctor> getDoctorByUserId(
+            @PathVariable int id) {
+        return new ResponseEntity<>(
+                this.doctorService.getDoctorByUserId(id), 
+                HttpStatus.OK);
+    }
+    
 }

@@ -4,10 +4,15 @@
  */
 package com.clinic.repository;
 
+import com.clinic.pojo.Bill;
+import java.util.List;
+import java.util.Map;
+
 /**
  *
- * @author hp
+ * @author admin
  */
-public class BillRepository {
-    
+public interface BillRepository {
+    List<Object[]> getBillByMedicalReportId(Map<String, String> params);
+    List<Object[]> getMedicineBillByMedicalReportId(Map<String, String> params);
 }

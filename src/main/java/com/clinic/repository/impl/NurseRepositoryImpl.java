@@ -5,11 +5,20 @@
 package com.clinic.repository.impl;
 
 import com.clinic.pojo.Doctor;
+import com.clinic.pojo.DoctorShift;
 import com.clinic.pojo.Nurse;
+import com.clinic.pojo.NurseShift;
 import com.clinic.repository.NurseRepository;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.hibernate.HibernateException;
@@ -30,6 +39,8 @@ public class NurseRepositoryImpl implements NurseRepository {
 
     @Autowired
     private LocalSessionFactoryBean factory;
+    @Autowired
+    private SimpleDateFormat f;
 
     @Override
     public Nurse getNurseById(int id) {
@@ -95,6 +106,23 @@ public class NurseRepositoryImpl implements NurseRepository {
             ex.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public Nurse getNurseByUserId(int id) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder b = session.getCriteriaBuilder();
+        CriteriaQuery<Nurse> q = b.createQuery(Nurse.class);
+        Root<Nurse> root = q.from(Nurse.class);
+        q.select(root);
+
+        try {
+            Predicate predicate = b.equal(root.get("userId").get("id"), id);
+            q.where(predicate);
+        } catch (NumberFormatException e) {
+        }
+        Query<Nurse> query = session.createQuery(q);
+        return query.getResultList().isEmpty() ? null : query.getResultList().get(0);
     }
 
 }

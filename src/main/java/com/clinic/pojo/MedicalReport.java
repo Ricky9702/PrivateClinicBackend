@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "MedicalReport.findAll", query = "SELECT m FROM MedicalReport m"),
     @NamedQuery(name = "MedicalReport.findById", query = "SELECT m FROM MedicalReport m WHERE m.id = :id"),
-    @NamedQuery(name = "MedicalReport.findBysymptom", query = "SELECT m FROM MedicalReport m WHERE m.symptom = :symptom"),
+    @NamedQuery(name = "MedicalReport.findBySyntomp", query = "SELECT m FROM MedicalReport m WHERE m.syntomp = :syntomp"),
     @NamedQuery(name = "MedicalReport.findByDiagnose", query = "SELECT m FROM MedicalReport m WHERE m.diagnose = :diagnose"),
     @NamedQuery(name = "MedicalReport.findByCreatedDate", query = "SELECT m FROM MedicalReport m WHERE m.createdDate = :createdDate")})
 public class MedicalReport implements Serializable {
@@ -48,14 +48,16 @@ public class MedicalReport implements Serializable {
     @Column(name = "id")
     private Integer id;
     @Size(max = 100)
-    @Column(name = "symptom")
-    private String symptom;
+    @Column(name = "syntomp")
+    private String syntomp;
     @Size(max = 100)
     @Column(name = "diagnose")
     private String diagnose;
     @Column(name = "createdDate")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
+    @Column(name = "is_paid")
+    private Short isPaid;
     @JoinColumn(name = "bill_id", referencedColumnName = "id")
     @ManyToOne
     private Bill billId;
@@ -84,12 +86,12 @@ public class MedicalReport implements Serializable {
         this.id = id;
     }
 
-    public String getsymptom() {
-        return symptom;
+    public String getSyntomp() {
+        return syntomp;
     }
 
-    public void setsymptom(String symptom) {
-        this.symptom = symptom;
+    public void setSyntomp(String syntomp) {
+        this.syntomp = syntomp;
     }
 
     public String getDiagnose() {
@@ -164,6 +166,20 @@ public class MedicalReport implements Serializable {
     @Override
     public String toString() {
         return "com.clinic.pojo.MedicalReport[ id=" + id + " ]";
+    }
+
+    /**
+     * @return the isPaid
+     */
+    public Short getIsPaid() {
+        return isPaid;
+    }
+
+    /**
+     * @param isPaid the isPaid to set
+     */
+    public void setIsPaid(Short isPaid) {
+        this.isPaid = isPaid;
     }
     
 }

@@ -4,7 +4,9 @@
  */
 package com.clinic.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,8 +17,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.Valid;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -26,9 +31,23 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(name = "medicine_unit")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "MedicineUnit.findAll", query = "SELECT u FROM MedicineUnit u"),
-    @NamedQuery(name = "MedicineUnit.findById", query = "SELECT u FROM MedicineUnit u WHERE u.id = :id")})
+    @NamedQuery(name = "MedicineUnit.findAll", query = "SELECT m FROM MedicineUnit m"),
+    @NamedQuery(name = "MedicineUnit.findById", query = "SELECT m FROM MedicineUnit m WHERE m.id = :id")})
 public class MedicineUnit implements Serializable {
+
+    /**
+     * @return the active
+     */
+    public Integer getActive() {
+        return active;
+    }
+
+    /**
+     * @param active the active to set
+     */
+    public void setActive(Integer active) {
+        this.active = active;
+    }
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -36,16 +55,28 @@ public class MedicineUnit implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    
+    @Valid
     @JoinColumn(name = "medicine_id", referencedColumnName = "id")
     @ManyToOne
     private Medicine medicineId;
+    
     @JoinColumn(name = "unit_id", referencedColumnName = "id")
     @ManyToOne
+    @Valid
     private Unit unitId;
+    
+    @OneToMany(mappedBy = "medicineUnitId")
+    @JsonIgnore
+    private Collection<ReportDetail> reportDetailCollection;
     @Column(name = "unit_price")
     private Integer unitPrice;
+    
     @Column(name = "quantity")
     private Integer quantity;
+    
+    @Column(name = "active")
+    private Integer active;
     
     public MedicineUnit() {
     }
@@ -78,6 +109,24 @@ public class MedicineUnit implements Serializable {
         this.unitId = unitId;
     }
 
+    @XmlTransient
+    public Collection<ReportDetail> getReportDetailCollection() {
+        return reportDetailCollection;
+    }
+
+    public void setReportDetailCollection(Collection<ReportDetail> reportDetailCollection) {
+        this.reportDetailCollection = reportDetailCollection;
+    }
+    
+     public Integer getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(Integer unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -101,20 +150,6 @@ public class MedicineUnit implements Serializable {
     @Override
     public String toString() {
         return "com.clinic.pojo.MedicineUnit[ id=" + id + " ]";
-    }
-
-    /**
-     * @return the unitPrice
-     */
-    public Integer getUnitPrice() {
-        return unitPrice;
-    }
-
-    /**
-     * @param unitPrice the unitPrice to set
-     */
-    public void setUnitPrice(Integer unitPrice) {
-        this.unitPrice = unitPrice;
     }
 
     /**

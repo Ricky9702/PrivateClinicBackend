@@ -18,14 +18,55 @@
         <put-attribute name="content"
                        value="/WEB-INF/pages/index.jsp" />
     </definition>
-    <definition name="products" extends="baseLayout">
-        <put-attribute name="title" value="Quản trị sản phẩm" />
-        <put-attribute name="content"
-                       value="/WEB-INF/pages/products.jsp" />
-    </definition>
+
     <definition name="login" extends="baseLayout">
         <put-attribute name="title" value="Đăng nhập" />
         <put-attribute name="content"
                        value="/WEB-INF/pages/login.jsp" />
+    </definition>
+    <definition name="patientstat" extends="baseLayout">
+        <put-attribute name="title" value="Thống kê" />
+        <put-attribute name="content"
+                       value="/WEB-INF/pages/patientstat.jsp" />
+    </definition>
+    <definition name="revenuestat" extends="baseLayout">
+        <put-attribute name="title" value="Thống kê" />
+        <put-attribute name="content"
+                       value="/WEB-INF/pages/revenuestat.jsp" />
+    </definition>
+    
+     <definition name="shift" extends="baseLayout">
+        <put-attribute name="title" value="Quản lý lịch trực" />
+        <put-attribute name="content"
+                       value="/WEB-INF/pages/shift.jsp" />
+    </definition>
+    
+         <definition name="createShift" extends="baseLayout">
+        <put-attribute name="title" value="Quản lý lịch trực" />
+        <put-attribute name="content"
+                       value="/WEB-INF/pages/createShift.jsp" />
+    </definition>
+    
+        <definition name="users" extends="baseLayout">
+        <put-attribute name="title" value="Quản lý nhân viên" />
+        <put-attribute name="content"
+                       value="/WEB-INF/pages/manageUser.jsp" />
+    </definition>
+      <definition name="detailuser" extends="baseLayout">
+        <put-attribute name="title" value="Quản lý nhân viên" />
+        <put-attribute name="content"
+                       value="/WEB-INF/pages/detailUser.jsp" />
+    </definition>
+    
+     <definition name="medicine" extends="baseLayout">
+        <put-attribute name="title" value="Quản trị lý thuốc" />
+        <put-attribute name="content"
+                       value="/WEB-INF/pages/medicine.jsp" />
+    </definition>
+    
+     <definition name="createMedicine" extends="baseLayout">
+        <put-attribute name="title" value="Quản lý thuốc" />
+        <put-attribute name="content"
+                       value="/WEB-INF/pages/createMedicine.jsp" />
     </definition>
 </tiles-definitions>

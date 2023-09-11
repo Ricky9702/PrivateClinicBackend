@@ -10,12 +10,10 @@ import java.util.Map;
 
 /**
  *
- * @author hp
+ * @author admin
  */
 public interface PatientService {
-    Patient getById(int id);
+    Boolean createPatient(Map<String, String> patient);
+    Patient getPatientByUserId(int id);
     List<Patient> getAllPatients(Map<String, Object> params);
-    Boolean create(Patient patient);
-    Boolean update(Patient patient);
-    Boolean delete(int id);
 }

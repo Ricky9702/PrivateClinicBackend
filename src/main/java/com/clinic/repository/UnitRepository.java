@@ -10,9 +10,10 @@ import java.util.Map;
 
 /**
  *
- * @author hp
+ * @author admin
  */
 public interface UnitRepository {
     Unit getUnitById(int id);
+    Unit getUnitByName(String name);
     List<Unit> getUnits(Map<String, String> params);
 }

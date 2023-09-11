@@ -19,8 +19,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.format.FormatterRegistry;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -30,7 +28,8 @@ import org.springframework.web.servlet.config.annotation.DefaultServletHandlerCo
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
 
 /**
  *
@@ -42,8 +41,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ComponentScan(basePackages = {
     "com.clinic.controllers",
     "com.clinic.repository",
-    "com.clinic.service",
-    "com.clinic.configs" // Add this line to include the package containing configuration classes
+    "com.clinic.service"
 
 })
 @PropertySource("classpath:configs.properties")
@@ -66,18 +64,17 @@ public class WebAppContextConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/js/**").addResourceLocations("/WEB-INF/resources/js/");
     }
-    
-    
 
-//    @Bean
-//    public InternalResourceViewResolver internalResourceViewResolver() {
-//        InternalResourceViewResolver r = new InternalResourceViewResolver();
-//        r.setViewClass(JstlView.class);
-//        r.setPrefix("/WEB-INF/pages/");
-//        r.setSuffix(".jsp");
-//        
-//        return r;
-//    }
+    @Bean
+    public InternalResourceViewResolver internalResourceViewResolver() {
+        InternalResourceViewResolver r = new InternalResourceViewResolver();
+        r.setViewClass(JstlView.class);
+        r.setPrefix("/WEB-INF/pages/");
+        r.setSuffix(".jsp");
+
+        return r;
+    }
+
     @Bean
     public Cloudinary cloudinary() {
         Cloudinary cloudinary
@@ -89,24 +86,6 @@ public class WebAppContextConfig implements WebMvcConfigurer {
         return cloudinary;
     }
 
-    @Bean
-    public JavaMailSender javaMailSender() {
-       JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost("smtp.gmail.com");
-        mailSender.setPort(587); // Use port 587 for TLS
-        mailSender.setUsername("phle8966@gmail.com");
-        mailSender.setPassword("le132132");
-
-        // Enable TLS properties
-        Properties props = new Properties();
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.transport.protocol", "smtp");
-
-        mailSender.setJavaMailProperties(props);
-
-        return mailSender;
-    }
     @Bean
     public CommonsMultipartResolver multipartResolver() {
         CommonsMultipartResolver resolver
@@ -136,10 +115,6 @@ public class WebAppContextConfig implements WebMvcConfigurer {
     public Validator getValidator() {
         return validator();
     }
-    
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**");
-    
-    }
+
 }
+

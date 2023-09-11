@@ -28,30 +28,56 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api")
+@CrossOrigin
 public class ApiScheduleDetailController {
 
     @Autowired
     private ScheduleDetailService scheduleDetailService;
-    
-    @CrossOrigin
-    @GetMapping("/scheduledetails")
+@CrossOrigin
+    @GetMapping("/schedule-details")
     public ResponseEntity<List<ScheduleDetail>> listScheduleDetailByDate(
             @RequestParam Map<String, String> params) {
-        return new ResponseEntity<>(this.scheduleDetailService.getScheduleDetailByDate(params), HttpStatus.OK);
+        return new ResponseEntity<>(
+                this.scheduleDetailService.getScheduleDetailByDate(params), 
+                HttpStatus.OK);
     }
-
-    @PostMapping("/scheduledetail")
+    @CrossOrigin
+    @GetMapping("/schedule-details/count")
+    public ResponseEntity<Integer> countScheduleDetailByDate(
+            @RequestParam Map<String, String> params) {
+        return new ResponseEntity<>(
+                this.scheduleDetailService.countScheduleDetailByDate(params), 
+                HttpStatus.OK);
+    }
+    @CrossOrigin
+    @GetMapping("/schedule-details/{id}")
+    public ResponseEntity<ScheduleDetail> getScheduleDetailById(
+            @PathVariable int id) {
+        return new ResponseEntity<>(
+                this.scheduleDetailService.getScheduleDetailById(id), 
+                HttpStatus.OK);
+    }
+@CrossOrigin
+    @PostMapping("/schedule-details")
     public ResponseEntity createScheduleDetail(@RequestBody Map<String, Object> schedule) {
         this.scheduleDetailService.createScheduleDetail(schedule);
         return new ResponseEntity(HttpStatus.CREATED);
     }
     
-    @RequestMapping(value = "/scheduledetail/{id}", method = RequestMethod.PATCH)  
+    @RequestMapping(value = "/schedule-detail/{id}", method = RequestMethod.PATCH)  
     public ResponseEntity<ScheduleDetail> updateIsConfirm(
             @PathVariable int id, @RequestBody Map<String, Short> isConfirm)
     {
         this.scheduleDetailService.updateIsConfirm(
                 id, isConfirm);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/schedule-detail/cancel/{id}", method = RequestMethod.PATCH)  
+    public ResponseEntity<ScheduleDetail> updateIsCancel(
+            @PathVariable int id, @RequestBody Map<String, Short> isCancel)
+    {
+        this.scheduleDetailService.updateIsCancel(id, isCancel);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

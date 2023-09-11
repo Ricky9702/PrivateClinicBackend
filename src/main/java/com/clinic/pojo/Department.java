@@ -4,7 +4,7 @@
  */
 package com.clinic.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
@@ -33,7 +33,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Department.findById", query = "SELECT d FROM Department d WHERE d.id = :id"),
     @NamedQuery(name = "Department.findByName", query = "SELECT d FROM Department d WHERE d.name = :name"),
     @NamedQuery(name = "Department.findByDetail", query = "SELECT d FROM Department d WHERE d.detail = :detail")})
-@JsonIgnoreProperties("doctorCollection")
 public class Department implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -49,6 +48,7 @@ public class Department implements Serializable {
     @Column(name = "detail")
     private String detail;
     @OneToMany(mappedBy = "departmentId")
+    @JsonIgnore
     private Collection<Doctor> doctorCollection;
 
     public Department() {

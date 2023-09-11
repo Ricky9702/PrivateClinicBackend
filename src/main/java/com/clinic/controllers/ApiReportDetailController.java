@@ -3,7 +3,6 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.clinic.controllers;
-
 import com.clinic.pojo.ReportDetail;
 import com.clinic.service.ReportDetailService;
 import java.util.List;
@@ -19,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  *
- * @author hp
+ * @author admin
  */
 @RestController
 @RequestMapping("/api")

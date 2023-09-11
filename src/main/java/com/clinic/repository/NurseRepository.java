@@ -6,6 +6,7 @@ package com.clinic.repository;
 
 import com.clinic.pojo.Nurse;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -13,6 +14,7 @@ import java.util.List;
  */
 public interface NurseRepository {
     Nurse getNurseById(int id);
+    Nurse getNurseByUserId(int id);
     List<Nurse> getNurses();
     Boolean createNurse(Nurse nurse);
     Boolean updateNurse(Nurse nurse);

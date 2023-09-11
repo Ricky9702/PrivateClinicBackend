@@ -13,6 +13,7 @@ import java.util.Map;
  * @author admin
  */
 public interface MedicalReportService {
-    List<MedicalReport> getMedicalReports(Map<String, Object> params);
+    List<MedicalReport> getMedicalReports(Map<String, String> params);
+    Boolean updatePaid(Map<String,String> params);
     boolean create(Map<String, Object> object);
 }

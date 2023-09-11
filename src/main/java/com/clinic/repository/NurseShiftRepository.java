@@ -6,6 +6,7 @@ package com.clinic.repository;
 
 import com.clinic.pojo.NurseShift;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -14,6 +15,7 @@ import java.util.List;
 public interface NurseShiftRepository {
     List<NurseShift> getNursesShift();
     NurseShift getNurseShiftById(int id);
+    List<Object[]> getNurseAndShifts(Map<String, String> params);
     Boolean createNurseShift(NurseShift nurseShift);
     Boolean updateNurseShift(NurseShift nurseShift);
     Boolean deleteNurseShift(int id);

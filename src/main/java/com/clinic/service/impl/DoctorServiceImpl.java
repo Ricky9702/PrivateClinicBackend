@@ -27,5 +27,10 @@ public class DoctorServiceImpl implements DoctorService{
     public List<Doctor> getDoctorByDepartmentId(Map<String, String> params) {
         return this.doctorRepository.getDoctorByDepartmentId(params);
     }
+
+    @Override
+    public Doctor getDoctorByUserId(int id) {
+        return this.doctorRepository.getDoctorByUserId(id);
+    }
     
 }

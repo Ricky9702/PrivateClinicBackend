@@ -6,14 +6,17 @@ package com.clinic.repository;
 
 import com.clinic.pojo.MedicineUnit;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author admin
  */
 public interface MedicineUnitRepository {
-    List<MedicineUnit> getAllMedicineUnit();
-    MedicineUnit getById(int id);
+    List<MedicineUnit> getAllMedicineUnit(Map<String, String> object);
+    List<Object[]> getMedicineUnitList(Map<String, String> object);
     MedicineUnit getOrCreateByMedicineUnit(int medicineId, int unitId);
+    MedicineUnit getById(int id);
+    boolean createOrUpdateMedicineUnit(MedicineUnit medicineUnit);
     boolean update(MedicineUnit medicineUnit);
 }

@@ -14,37 +14,29 @@ import org.springframework.stereotype.Service;
 
 /**
  *
- * @author hp
+ * @author admin
  */
 @Service
 public class PatientServiceImpl implements PatientService{
-    
+
     @Autowired
     private PatientRepository patientRepository;
+    
+    @Override
+    public Boolean createPatient(Map<String, String> patient) {
+        return this.patientRepository.createPatient(patient);
+    }
 
     @Override
-    public Patient getById(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Patient getPatientByUserId(int id) {
+        return this.patientRepository.getPatientByUserId(id);
     }
+    
+    
 
     @Override
     public List<Patient> getAllPatients(Map<String, Object> params) {
         return this.patientRepository.getAllPatients(params);
     }
-
-    @Override
-    public Boolean create(Patient patient) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Boolean update(Patient patient) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public Boolean delete(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-  
+    
 }

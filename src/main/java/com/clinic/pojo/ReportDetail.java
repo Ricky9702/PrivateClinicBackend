@@ -4,12 +4,10 @@
  */
 package com.clinic.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -17,12 +15,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
-import org.hibernate.annotations.Proxy;
 
 /**
  *
@@ -38,15 +34,15 @@ import org.hibernate.annotations.Proxy;
     @NamedQuery(name = "ReportDetail.findByUsageInfo", query = "SELECT r FROM ReportDetail r WHERE r.usageInfo = :usageInfo")})
 public class ReportDetail implements Serializable {
 
-   @Min(value = 0, message = "Quantity must be at least 0")
-    @Column(name = "quantity")
-    private Integer quantity;
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Min(value = 0)
+    @Column(name = "quantity")
+    private Integer quantity;
     @Size(max = 100)
     @Column(name = "usage_info")
     private String usageInfo;
@@ -56,7 +52,6 @@ public class ReportDetail implements Serializable {
     @JoinColumn(name = "medicine_unit_id", referencedColumnName = "id")
     @ManyToOne
     private MedicineUnit medicineUnitId;
-    
 
     public ReportDetail() {
     }
@@ -73,6 +68,13 @@ public class ReportDetail implements Serializable {
         this.id = id;
     }
 
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 
     public String getUsageInfo() {
         return usageInfo;
@@ -90,16 +92,10 @@ public class ReportDetail implements Serializable {
         this.medicalreportId = medicalreportId;
     }
 
-   /**
-     * @return the medicineUnitId
-     */
     public MedicineUnit getMedicineUnitId() {
         return medicineUnitId;
     }
 
-    /**
-     * @param medicineUnitId the medicineUnitId to set
-     */
     public void setMedicineUnitId(MedicineUnit medicineUnitId) {
         this.medicineUnitId = medicineUnitId;
     }
@@ -127,14 +123,6 @@ public class ReportDetail implements Serializable {
     @Override
     public String toString() {
         return "com.clinic.pojo.ReportDetail[ id=" + id + " ]";
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
     }
     
 }

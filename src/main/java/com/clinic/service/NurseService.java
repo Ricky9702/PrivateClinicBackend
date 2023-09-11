@@ -13,6 +13,7 @@ import java.util.List;
  */
 public interface NurseService {
     Nurse getNurseById(int id);
+    Nurse getNurseByUserId(int id);
     List<Nurse> getNurses();
     Boolean createNurse(Nurse nurse);
     Boolean updateNurse(Nurse nurse);

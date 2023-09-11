@@ -4,19 +4,17 @@
  */
 package com.clinic.repository;
 
-import com.clinic.pojo.Nurse;
 import com.clinic.pojo.Patient;
 import java.util.List;
 import java.util.Map;
 
 /**
  *
- * @author hp
+ * @author admin
  */
 public interface PatientRepository {
-    Patient getById(int id);
+    Boolean createPatient(Map<String, String> patient);
     List<Patient> getAllPatients(Map<String, Object> params);
-    Boolean create(Patient patient);
-    Boolean update(Patient patient);
-    Boolean delete(int id);
+    Patient getPatientByUserId(int id);
+    Patient getById(int id);
 }

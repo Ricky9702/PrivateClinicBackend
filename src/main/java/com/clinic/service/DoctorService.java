@@ -14,5 +14,5 @@ import java.util.Map;
  */
 public interface DoctorService {
     List<Doctor> getDoctorByDepartmentId(Map<String, String> params);
-
+    Doctor getDoctorByUserId(int id);
 }

@@ -5,6 +5,8 @@
 package com.clinic.repository;
 
 import com.clinic.pojo.User;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -15,4 +17,9 @@ public interface UserRepository {
     User getUserByUsername(String username);
     User getUserById(int id);
     User createUser(User user);
+    boolean createDetailUser(User user);
+    boolean authUser(String username, String password);
+    List<User> getDoctorNurse(Map<String, String> params);
+    boolean update(User user);
+    boolean updateActiveField(User user);
 }

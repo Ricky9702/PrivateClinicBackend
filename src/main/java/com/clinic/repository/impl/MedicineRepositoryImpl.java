@@ -41,27 +41,32 @@ public class MedicineRepositoryImpl implements MedicineRepository {
         CriteriaQuery<Medicine> q = b.createQuery(Medicine.class);
         Root<Medicine> root = q.from(Medicine.class);
         q.select(root);
-        
+
         if (params != null) {
             List<Predicate> predicates = new ArrayList();
-            
+
             String cateId = params.getOrDefault("cateId", "");
             if (cateId != null && !cateId.isEmpty()) {
                 predicates.add(b.equal(root.get("categoryId").get("id"), Integer.valueOf(cateId)));
-               q.where(predicates.toArray(new Predicate[]{}));
-                
+                q.where(predicates.toArray(new Predicate[]{}));
+
             }
-            
+
             String name = params.getOrDefault("name", "");
             if (name != null && !name.isEmpty()) {
-                          predicates.add(b.like(root.get("name"), String.format("%%%s%%", name)));
-               q.where(predicates.toArray(new Predicate[]{}));
-                
+                predicates.add(b.like(root.get("name"), String.format("%%%s%%", name)));
+                q.where(predicates.toArray(new Predicate[]{}));
+
             }
-            
-            
+
+            String cateName = params.getOrDefault("cateName", "");
+            if (cateName != null && !cateName.isEmpty()) {
+                predicates.add(b.like(root.get("categoryId").get("name"), String.format("%%%s%%", cateName)));
+                q.where(predicates.toArray(new Predicate[]{}));
+
+            }
         }
-        
+
         Query query = session.createQuery(q);
         return query.getResultList();
     }
@@ -80,7 +85,7 @@ public class MedicineRepositoryImpl implements MedicineRepository {
         } catch (NumberFormatException e) {
         }
         Query<Medicine> query = session.createQuery(q);
-        return query.getSingleResult();      
+        return query.getSingleResult();
     }
 
     @Override
@@ -92,7 +97,8 @@ public class MedicineRepositoryImpl implements MedicineRepository {
         } catch (HibernateException ex) {
             ex.printStackTrace();
             return false;
-        }        }
+        }
+    }
 
     @Override
     public Boolean updateMedicine(Medicine medicine) {
@@ -103,7 +109,8 @@ public class MedicineRepositoryImpl implements MedicineRepository {
         } catch (HibernateException ex) {
             ex.printStackTrace();
             return false;
-        }     }
+        }
+    }
 
     @Override
     public Boolean deleteMedicine(int id) {
@@ -115,7 +122,24 @@ public class MedicineRepositoryImpl implements MedicineRepository {
         } catch (HibernateException ex) {
             ex.printStackTrace();
             return false;
-        } 
+        }
+    }
+
+    @Override
+    public Medicine getMedicineByName(String name) {
+        Session session = this.factory.getObject().getCurrentSession();
+        CriteriaBuilder b = session.getCriteriaBuilder();
+        CriteriaQuery<Medicine> q = b.createQuery(Medicine.class);
+        Root<Medicine> root = q.from(Medicine.class);
+        q.select(root);
+
+        try {
+            Predicate predicate = b.equal(root.get("name"), name);
+            q.where(predicate);
+        } catch (NumberFormatException e) {
+        }
+        Query<Medicine> query = session.createQuery(q);
+        return query.getResultList().isEmpty() ? null : query.getResultList().get(0);
     }
 
 }
